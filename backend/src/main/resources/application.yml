@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: openapi-catalog-backend
+  datasource:
+    username: openapicatalog
+  profiles:
+    active: prod
+tools:
+  diff:
+    github:
+      name: openapi-changes
+      organization: pb33f
+  lint:
+    github:
+      name: spectral
+      organization: stoplightio

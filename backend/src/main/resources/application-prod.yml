@@ -1,0 +1,10 @@
+server:
+  port: 8000
+spring:
+  datasource:
+    password: openapicatalog
+    # hsqldb.files_space=true for data safety
+    url: jdbc:hsqldb:file:${user.home}/.predic8/openapicatalog/database/database;hsqldb.files_space=true
+  jpa:
+    hibernate:
+      ddl-auto: update
