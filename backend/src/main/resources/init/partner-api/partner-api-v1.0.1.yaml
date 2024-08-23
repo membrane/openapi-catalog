@@ -1,0 +1,164 @@
+openapi: '3.0.2'
+info:
+  title: Partner API für Versicherungen
+  x-api-id: partner-api
+  version: '1.0.1'
+  description: |
+    ![Logo](https://www.predic8.de/logo6.png)
+    # Die Partner <b>API</b> in der Versicherung
+    Lore et ipsum <b>blah</b> blah
+  contact:
+    name: Thomas
+    email: bayer@predic8.de
+servers:
+  - url: https://api.server.test/v1
+tags:
+  - name: Partner
+  - name: Vertrag
+paths:
+  /partner:
+    get:
+      tags:
+        - Partner
+      operationId: getPartners
+      summary: Liste der Partner
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PartnerListe"
+    post:
+      tags:
+        - Partner
+      operationId: createPartner
+      summary: Lege neuen Partner an
+      requestBody:
+        $ref: "#/components/requestBodies/PartnerInput"
+      responses:
+        '201':
+          description: OK
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL des neu erzeugten Partners
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Partner"
+  /partner/{pid}:
+    parameters:
+      - name: pid
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Partner
+      operationId: getPartner
+      summary: Einzelner Partner
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PartnerListe"
+    put:
+      tags:
+        - Partner
+      operationId: updatePartner
+      summary: Ändere Partner
+      requestBody:
+        $ref: "#/components/requestBodies/PartnerInput"
+      responses:
+        '200':
+          $ref: "#/components/responses/PartnerOutput"
+    delete:
+      tags:
+        - Partner
+      operationId: deletePartner
+      summary: Lösche Partner
+      responses:
+        '200':
+          description: OK
+        'default':
+          $ref: "#/components/responses/ProblemJSON"
+
+components:
+  responses:
+    ProblemJSON:
+      description: Bad Request
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                maxLength: 100
+                pattern: "/w*"
+              type:
+                type: string
+                maxLength: 100
+                pattern: "/w*"
+    PartnerOutput:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Partner"
+  requestBodies:
+    PartnerInput:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Partner"
+  schemas:
+    PartnerListe:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            count:
+              type: integer
+              format: int32
+        partner:
+          type: array
+          items:
+            $ref: "#/components/schemas/Partner"
+    Partner:
+      type: object
+      required:
+        - id
+        - vorname
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          maxLength: 100
+        vorname:
+          type: string
+          minLength: 3
+          maxLength: 100
+          description: Vorname des Partners
+          example: Paul
+          pattern: ".*"
+        foto:
+          type: string
+          format: url
+          example: http://predic8.de/bucket/21213
+          pattern: ".*"
+        kontakte:
+          type: array
+          items:
+            type: string
+            format: email
+            example: bayer@predic8.de
+            pattern: ".*"
+            maxItems: 10

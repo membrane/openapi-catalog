@@ -1,0 +1,66 @@
+{
+  "name": "openapi-catalog-frontend",
+  "version": "1.0.0",
+  "description": "Frontend of the OpenAPI-Catalog",
+  "productName": "OpenAPI-Catalog Frontend",
+  "author": "Martin Dünkelmann <duenkelmann@predic8.de>",
+  "type": "module",
+  "packageManager": "pnpm@9.8.0+sha512.8e4c3550fb500e808dbc30bb0ce4dd1eb614e30b1c55245f211591ec2cdf9c611cabd34e1364b42f564bd54b3945ed0f49d61d1bbf2ec9bd74b866fcdc723276",
+  "private": true,
+  "scripts": {
+    "build": "quasar build",
+    "predev": "corepack use pnpm@* && pnpm lint",
+    "dev": "quasar dev",
+    "preinstall": "npx only-allow pnpm",
+    "lint": "pnpm lint:js && pnpm lint:prettier",
+    "lint:js": "eslint --cache --cache-location node_modules/.cache/.eslintcache --fix .",
+    "lint:prettier": "prettier --cache --cache-location node_modules/.cache/.prettiercache --ignore-path .gitignore --list-different --write '**/*.{js,ts,vue,scss,html,md,json}' .",
+    "prepare": "husky",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.16.12",
+    "@quasar/quasar-ui-qmarkdown": "^2.0.0-beta.10",
+    "pinia": "^2.2.2",
+    "quasar": "^2.16.9",
+    "swagger-ui": "^5.17.14",
+    "vue": "^3.4.38",
+    "vue-router": "^4.4.3"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "19.4.0",
+    "@commitlint/config-conventional": "19.2.2",
+    "@eslint/js": "9.9.0",
+    "@quasar/app-vite": "2.0.0-beta.19",
+    "@quasar/quasar-app-extension-qmarkdown": "2.0.0-beta.10",
+    "@types/node": "22.5.0",
+    "@types/swagger-ui": "3.52.4",
+    "autoprefixer": "10.4.20",
+    "eslint": "9.9.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-prettier": "5.2.1",
+    "eslint-plugin-vue": "9.27.0",
+    "globals": "15.9.0",
+    "husky": "9.1.5",
+    "lint-staged": "15.2.9",
+    "prettier": "3.3.3",
+    "ts-node": "10.9.2",
+    "typescript": "5.5.4",
+    "typescript-eslint": "8.2.0",
+    "vite-plugin-checker": "0.7.2",
+    "vue-tsc": "2.0.29",
+    "yaml": "2.5.0"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.**": [
+      "eslint --fix",
+      "prettier --ignore-unknown --write"
+    ]
+  },
+  "browserslist": [
+    "defaults"
+  ]
+}
