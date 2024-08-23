@@ -1,0 +1,10 @@
+server:
+  port: 9091
+spring:
+  datasource:
+    password: openapicatalog
+    # hsqldb.lock_file=false to access it via a DatabaseViewer
+    url: jdbc:hsqldb:file:/tmp/predic8/openapicatalog/database/database;hsqldb.lock_file=false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
