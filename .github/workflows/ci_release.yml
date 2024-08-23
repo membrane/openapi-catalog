@@ -1,0 +1,90 @@
+name: CI Release
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build_frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frontend
+        uses: actions/checkout@v4.1.7
+        with:
+          sparse-checkout: 'frontend'
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4.0.0
+        with:
+          package_json_file: 'frontend/package.json'
+      - name: Setup node env
+        uses: actions/setup-node@v4.0.3
+        with:
+          cache: 'pnpm'
+          cache-dependency-path: 'frontend/pnpm-lock.yaml'
+          check-latest: true
+          node-version: 'lts/*'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: 'frontend'
+      - name: Lint code
+        run: pnpm prepare && pnpm lint
+        working-directory: 'frontend'
+      - name: Build frontend
+        run: pnpm build
+        working-directory: 'frontend'
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4.3.6
+        with:
+          name: frontend-build
+          path: frontend/dist/spa/
+  build_backend:
+    needs: build_frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout backend
+        uses: actions/checkout@v4.1.7
+        with:
+          sparse-checkout: 'backend'
+      - name: Setup java env
+        uses: actions/setup-java@v4.2.2
+        with:
+          cache: 'gradle'
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Create needed folders for the frontend artifact
+        run: |
+          mkdir -p src/main/resources/static/
+          mkdir -p src/main/resources/templates/
+        working-directory: 'backend'
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: frontend-build
+          path: backend/src/main/resources/static/
+      - name: Move index.html from static to templates
+        run: gradle bootJar
+        working-directory: 'backend'
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4.3.6
+        with:
+          name: backend-build
+          path: backend/build/libs/openapi-catalog-*.jar
+  release:
+    needs: build_backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download backend artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: backend-build
+          path: build/libs/
+      - name: Create release tag
+        run: |
+          TAG_NAME=${{ github.event.head_commit.timestamp }}
+          TAG_NAME=${TAG_NAME//:/-}
+          echo "TAG_NAME=${TAG_NAME}" >> "$GITHUB_ENV"
+      - name: Upload release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/
+          make_latest: true
+          tag_name: ${{ env.TAG_NAME }}
